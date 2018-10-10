@@ -1,5 +1,6 @@
-a = 0
+from reader import *
 
-for i in range(4):
-    a += 1
-    print(a)
+
+
+data = read_dataset()
+print(data[98])
