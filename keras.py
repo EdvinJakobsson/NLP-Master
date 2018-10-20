@@ -4,30 +4,23 @@ import numpy as np
 from reader import *
 from extraction_functions import *
 import matplotlib.pyplot as plt
+from extra_functions import *
 
 number_of_essays = 1780
 x = np.zeros((number_of_essays, 0))
 y = np.zeros((number_of_essays, 0))
 
 data = read_dataset(number_of_essays)
-x = extract_length(x, data)
-y = extract_domain1_score(y, data)
+x = extract_word_length(x, data)
+x = extract_average_word_length(x, data)
+y = extract_score(y, 6, data)
+y = make_onehotvector(y, 2, 12)
 
-x_train = x
-y_train = y
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=415)
 
-d = np.zeros([number_of_essays, 11])
-for i in range(number_of_essays):
-    d[i, int(y_train[i]-2) ] = 1
+#x_train = tf.keras.utils.normalize(x_train, axis=1)
+#x_test = tf.keras.utils.normalize(x_test, axis=1)
 
-y_train = d
-
-x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.20, random_state=415)
-
-x_train = tf.keras.utils.normalize(x_train, axis=1)
-x_test = tf.keras.utils.normalize(x_test, axis=1)
-
-print(x_train.shape)
 
 model = tf.keras.models.Sequential()
 #model.add(tf.keras.layers.Flatten())
@@ -36,7 +29,7 @@ model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(11, activation=tf.nn.softmax))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'] )
-estimator = model.fit(x_train, y_train, epochs=40, validation_data=(x_test, y_test))
+estimator = model.fit(x_train, y_train, epochs=200, validation_data=(x_test, y_test))
 
 
 
@@ -70,23 +63,15 @@ plt.legend()
 plt.savefig('accuracy-function.pdf', bbox_inches='tight')
 plt.show()
 
-
 ################################
 
 
-
-
-
-
-
-#val_loss, val_acc = model.evaluate(x_test, y_test)
-#print(val_loss, val_acc)
-
 p = model.predict([x_test])
+print("Predict 6 for all x: {}".format(np.argmax(p)== 6))
 
-#print(p[0])
+d = []
+for i in range(len(x_test)):
+    d.append(np.argmax(p[i]))
 
-#for i in range(len(p)):
-#    print(np.argmax(p[i]))
-
-print((np.argmax(p)!=6))
+print("result: {}".format(d))
+stats(d)
