@@ -3,6 +3,7 @@ import numpy as np
 import nltk
 from nltk.tokenize import RegexpTokenizer
 import matplotlib.pyplot as plt
+import math
 
 
 def extract_word_length(array, data):    # array is input values, data is the list created by reader.py.
@@ -67,12 +68,9 @@ def extract_stan_dev_word_length(array, data):
             average = 0
             for word in words:
                 average = average + pow((len(word) - average_length), 2)
+
             average = average / len(words)
             values.append(math.sqrt(average))
-
-
-
-            values.append(average_length)
 
         array = np.c_[array, values]
     except:
@@ -80,10 +78,12 @@ def extract_stan_dev_word_length(array, data):
         exit(1)
 
     return array
-###fixa stand dev
 
-data = read_dataset(2)
-array = np.zeros((2, 0))
+number_of_essays = 10
 
-array = extract_stan_dev_word_length(array, data)
-print(array)
+#data = read_dataset(number_of_essays)
+#array = np.zeros((number_of_essays, 0))
+#array = extract_word_length(array, data)
+#array = extract_average_word_length(array, data)
+#array = extract_stan_dev_word_length(array, data)
+#print(array)

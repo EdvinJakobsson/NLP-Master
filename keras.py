@@ -13,6 +13,9 @@ y = np.zeros((number_of_essays, 0))
 data = read_dataset(number_of_essays)
 x = extract_word_length(x, data)
 x = extract_average_word_length(x, data)
+x = extract_stan_dev_word_length(x, data)
+
+print(x)
 y = extract_score(y, 6, data)
 y = make_onehotvector(y, 2, 12)
 
