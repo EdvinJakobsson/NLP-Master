@@ -3,6 +3,9 @@ from extraction_functions import *
 import numpy as np
 
 
+
+
+
 def make_onehotvector(array, lowest_grade, highest_grade):
     number_of_essays = len(array)
     number_of_grades = highest_grade - lowest_grade + 1

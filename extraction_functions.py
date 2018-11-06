@@ -7,6 +7,13 @@ import math
 import textstat
 
 
+def extract_words(text):
+    # object used to remove punctuations in essay
+    tokenizer = RegexpTokenizer(r'\w+')
+    words = tokenizer.tokenize(text)
+
+    return words
+
 def extract_word_length(array, data):    # array is input values, data is the list created by reader.py.
                                     # The array needs same number of rows as the data (length of data string)
     try:
@@ -52,13 +59,6 @@ def extract_average_word_length(array, data):
     return array
 
 
-def extract_words(text):
-    # object used to remove punctuations in essay
-    tokenizer = RegexpTokenizer(r'\w+')
-    words = tokenizer.tokenize(text)
-
-    return words
-
 
 def extract_stan_dev_word_length(array, data):
     try:
@@ -90,10 +90,21 @@ def extract_dale_score(array, data):
 
     return array
 
+git
+
+def extract_sentence_length(array, data):
+    values = []
+    for row in data:
+        values.append(textstat.sentence_count((row[2])))
+
+    array = np.c_[array, values]
+
+    return array
 
 
 
-# number_of_essays = 10
+
+# number_of_essays = 20
 # data = read_dataset(number_of_essays)
 # array = np.zeros((number_of_essays, 0))
 # print(array)
@@ -102,8 +113,11 @@ def extract_dale_score(array, data):
 # array = extract_average_word_length(array, data)
 # print(array)
 # array = extract_stan_dev_word_length(array, data)
+# array = extract_sentence_length(array, data)
+# print(array)
 # print(array)
 # array = extract_dale_score(array, data)
 # print(array)
 # array = extract_score(array, 6, data)
 # print(array)
+
