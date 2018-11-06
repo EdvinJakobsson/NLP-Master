@@ -6,6 +6,8 @@ from extraction_functions import *
 import matplotlib.pyplot as plt
 from extra_functions import *
 
+
+
 number_of_essays = 1780
 x = np.zeros((number_of_essays, 0))
 y = np.zeros((number_of_essays, 0))
@@ -14,26 +16,24 @@ data = read_dataset(number_of_essays)
 x = extract_word_length(x, data)
 x = extract_average_word_length(x, data)
 x = extract_stan_dev_word_length(x, data)
+x = extract_dale_score(x, data)
 
-print(x)
 y = extract_score(y, 6, data)
-y = make_onehotvector(y, 2, 12)
+y = y-2
 
+x_train = tf.keras.utils.normalize(x, axis=1)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=415)
-
-#x_train = tf.keras.utils.normalize(x_train, axis=1)
-#x_test = tf.keras.utils.normalize(x_test, axis=1)
-
 
 model = tf.keras.models.Sequential()
 #model.add(tf.keras.layers.Flatten())
-model.add(tf.keras.layers.Dense(20, activation=tf.nn.relu))
-model.add(tf.keras.layers.Dropout(0.2))
+model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
+#model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(11, activation=tf.nn.softmax))
 
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'] )
-estimator = model.fit(x_train, y_train, epochs=200, validation_data=(x_test, y_test))
-
+#adam = tf.keras.optimizers.Adam(lr=0.0003)
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'] )
+estimator = model.fit(x_train, y_train, epochs=200, validation_data=(x_test, y_test), verbose=True)
 
 
 #####################################

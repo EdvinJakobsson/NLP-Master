@@ -4,6 +4,7 @@ import nltk
 from nltk.tokenize import RegexpTokenizer
 import matplotlib.pyplot as plt
 import math
+import textstat
 
 
 def extract_word_length(array, data):    # array is input values, data is the list created by reader.py.
@@ -79,11 +80,30 @@ def extract_stan_dev_word_length(array, data):
 
     return array
 
-number_of_essays = 10
 
-#data = read_dataset(number_of_essays)
-#array = np.zeros((number_of_essays, 0))
-#array = extract_word_length(array, data)
-#array = extract_average_word_length(array, data)
-#array = extract_stan_dev_word_length(array, data)
-#print(array)
+def extract_dale_score(array, data):
+    values = []
+    for row in data:
+        values.append(textstat.dale_chall_readability_score(row[2]))
+
+    array = np.c_[array, values]
+
+    return array
+
+
+
+
+# number_of_essays = 10
+# data = read_dataset(number_of_essays)
+# array = np.zeros((number_of_essays, 0))
+# print(array)
+# array = extract_word_length(array, data)
+# print(array)
+# array = extract_average_word_length(array, data)
+# print(array)
+# array = extract_stan_dev_word_length(array, data)
+# print(array)
+# array = extract_dale_score(array, data)
+# print(array)
+# array = extract_score(array, 6, data)
+# print(array)
