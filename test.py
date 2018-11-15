@@ -8,20 +8,30 @@ from sklearn.utils import shuffle
 import csv
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
+from collections import Counter
+import itertools
 
-# number_of_essays = 10
-# data = read_dataset(number_of_essays)
-# y = np.zeros((number_of_essays, 0))
-# y = extract_score(y, 6, data)
-# y = y-2
-# d = y
-#
-# #a = quadratic_weighted_kappa_score(d,y)
+number_of_essays = 1780
+data = read_dataset(number_of_essays)
+x = np.zeros((number_of_essays, 0))
+y = np.zeros((number_of_essays, 0))
 
-d = numpy.array(["a","b","c","d","e,","f","g"])
-dd = numpy.array(["A","B","C","D","E,","F","G"])
-kfold = KFold(n_splits=7, shuffle=True)
+x = extract_word_length(x, data)
+x = extract_average_word_length(x, data)
+x = extract_stan_dev_word_length(x, data)
+x = extract_dale_score(x, data)
 
-for train_index, test_index in kfold.split(d,d):
-    x_train, y_train = d[train_index], dd[train_index]
-    print(x_train, y_train)
+y = extract_score(y, 6, data)
+y = y-2
+
+
+skfold = StratifiedKFold(n_splits=2)
+
+for train_index, test_index in skfold.split(y, y):
+     x_train, d_train = y[train_index], y[train_index]
+     x_test, d_test = y[test_index], y[test_index]
+     #print(train_index)
+
+     score = mlp(x_train, d_train, x_test, d_test, 200, 0)
+     print(score)

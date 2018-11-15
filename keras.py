@@ -8,7 +8,7 @@ from extra_functions import *
 from score import *
 
 
-number_of_essays = 1780
+number_of_essays = 20
 x = np.zeros((number_of_essays, 0))
 y = np.zeros((number_of_essays, 0))
 
@@ -21,7 +21,7 @@ x = extract_dale_score(x, data)
 y = extract_score(y, 6, data)
 y = y-2
 
-x_train = tf.keras.utils.normalize(x, axis=1)
+x = tf.keras.utils.normalize(x, axis=0)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=415)
 
 model = tf.keras.models.Sequential()
@@ -32,7 +32,8 @@ model.add(tf.keras.layers.Dense(11, activation=tf.nn.softmax))
 
 #adam = tf.keras.optimizers.Adam(lr=0.0003)
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'] )
-estimator = model.fit(x_train, y_train, epochs=200, validation_data=(x_test, y_test), verbose=True)
+estimator = model.fit(x_train, y_train, epochs=1, validation_data=(x_test, y_test), verbose=True)
+
 
 
 #####################################
