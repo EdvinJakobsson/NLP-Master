@@ -5,7 +5,7 @@ from reader import *
 from extraction_functions import *
 import matplotlib.pyplot as plt
 from extra_functions import *
-
+from score import *
 
 
 number_of_essays = 1780
@@ -25,7 +25,6 @@ x_train = tf.keras.utils.normalize(x, axis=1)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=415)
 
 model = tf.keras.models.Sequential()
-#model.add(tf.keras.layers.Flatten())
 model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
 model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
 #model.add(tf.keras.layers.Dropout(0.2))
@@ -72,9 +71,12 @@ plt.show()
 p = model.predict([x_test])
 print("Predict 6 for all x: {}".format(np.argmax(p)== 6))
 
-d = []
+y = []
 for i in range(len(x_test)):
-    d.append(np.argmax(p[i]))
+    y.append(np.argmax(p[i]))
 
-print("result: {}".format(d))
-stats(d)
+score = quadratic_weighted_kappa_score(y_test, y)
+print("Quadratic weighted Kappa Score: {}".format(score))
+
+#print("result: {}".format(d))
+#stats(d)

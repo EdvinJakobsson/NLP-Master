@@ -1,34 +1,27 @@
 from reader import *
+from score import *
+from extraction_functions import *
+from extra_functions import *
 import tensorflow as tf
 import numpy as np
 from sklearn.utils import shuffle
 import csv
 from sklearn.model_selection import train_test_split
-import array as arr
+from sklearn.model_selection import KFold
 
-#data = read_dataset()
+# number_of_essays = 10
+# data = read_dataset(number_of_essays)
+# y = np.zeros((number_of_essays, 0))
+# y = extract_score(y, 6, data)
+# y = y-2
+# d = y
+#
+# #a = quadratic_weighted_kappa_score(d,y)
 
-#X = (1,2,3,4,5,6,7,8,9,10)
-#Y = X
-#X, Y = shuffle(X, Y, random_state=1)
-#x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, random_state=415)
+d = numpy.array(["a","b","c","d","e,","f","g"])
+dd = numpy.array(["A","B","C","D","E,","F","G"])
+kfold = KFold(n_splits=7, shuffle=True)
 
-x_train = np.array([[[1.0]],[[2.0]],[[3.0]],[[4.0]]])
-y_train = np.array([1, 2, 3, 4])
-
-x_train, y_train = shuffle(x_train, y_train, random_state=1)
-
-print(x_train)
-print(y_train)
-
-print(isinstance(x_train, np.ndarray))
-
-model = tf.keras.models.Sequential()
-model.add(tf.keras.layers.Flatten())
-model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
-model.add(tf.keras.layers.Dense(10, activation=tf.nn.softmax))
-
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'] )
-#model.fit(x_train, y_train, epochs=3000)
-
-
+for train_index, test_index in kfold.split(d,d):
+    x_train, y_train = d[train_index], dd[train_index]
+    print(x_train, y_train)

@@ -90,7 +90,6 @@ def extract_dale_score(array, data):
 
     return array
 
-git
 
 def extract_sentence_length(array, data):
     values = []
