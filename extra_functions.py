@@ -3,21 +3,22 @@ from extraction_functions import *
 from score import *
 import numpy as np
 import tensorflow as tf
+from collections import Counter
 
 def mlp(x_train, d_train, x_test, d_test, epochs=200, dropout=0):
-    x_train = tf.keras.utils.normalize(x_train, axis=0)
-    x_test = tf.keras.utils.normalize(x_test, axis=0)
 
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
+    model.add(tf.keras.layers.Dense(28, activation=tf.nn.relu))
+    model.add(tf.keras.layers.Dense(28, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dropout(dropout))
     model.add(tf.keras.layers.Dense(11, activation=tf.nn.softmax))
 
     # adam = tf.keras.optimizers.Adam(lr=0.0003)
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    estimator = model.fit(x_train, d_train, epochs=epochs, verbose=False)
+    model.fit(x_train, d_train, epochs=epochs, verbose=False)
 
+    loss, train_acc = model.evaluate(x=x_train, y=d_train, batch_size=1, verbose=False, sample_weight=None, steps=None)
+    loss, test_acc = model.evaluate(x=x_test, y=d_test, batch_size=1, verbose=False, sample_weight=None, steps=None)
 
     p = model.predict([x_test])
     y_test = []
@@ -26,7 +27,8 @@ def mlp(x_train, d_train, x_test, d_test, epochs=200, dropout=0):
 
     kappa_score = quadratic_weighted_kappa_score(d_test, y_test)
 
-    return kappa_score
+    return train_acc, test_acc, kappa_score
+
 
 def quadratic_weighted_kappa_score(d_array, y_array):
     d = []

@@ -8,7 +8,7 @@ from extra_functions import *
 from score import *
 
 
-number_of_essays = 20
+number_of_essays = 1780
 x = np.zeros((number_of_essays, 0))
 y = np.zeros((number_of_essays, 0))
 
@@ -32,7 +32,7 @@ model.add(tf.keras.layers.Dense(11, activation=tf.nn.softmax))
 
 #adam = tf.keras.optimizers.Adam(lr=0.0003)
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'] )
-estimator = model.fit(x_train, y_train, epochs=1, validation_data=(x_test, y_test), verbose=True)
+estimator = model.fit(x_train, y_train, epochs=400, validation_data=(x_test, y_test), verbose=True)
 
 
 
@@ -79,5 +79,5 @@ for i in range(len(x_test)):
 score = quadratic_weighted_kappa_score(y_test, y)
 print("Quadratic weighted Kappa Score: {}".format(score))
 
-#print("result: {}".format(d))
-#stats(d)
+print("result: {}".format(y))
+stats(y)

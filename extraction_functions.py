@@ -15,7 +15,6 @@ def extract_words(text):
     return words
 
 def extract_word_length(array, data):    # array is input values, data is the list created by reader.py.
-                                    # The array needs same number of rows as the data (length of data string)
     try:
         values = []
         for row in data:
