@@ -2,7 +2,7 @@ import csv
 
 def read_dataset(stop):
 
-    with open('training_set_1.tsv') as tsvfile:
+    with open("Data/training_set_1.tsv") as tsvfile:
         reader = csv.reader(tsvfile, delimiter='\t')
         counter = 0
         data = []

@@ -1,20 +1,20 @@
 from reader import *
 from extraction_functions import *
-from score import *
+from BenHamner.score import quadratic_weighted_kappa
 import numpy as np
 import tensorflow as tf
 from collections import Counter
 
-def mlp(x_train, d_train, x_test, d_test, epochs=200, dropout=0):
+def mlp(x_train, d_train, x_test, d_test, layer1=20, layer2=20, epochs=200, learning_rate=0.0003, dropout=0):
 
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Dense(28, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(28, activation=tf.nn.relu))
+    model.add(tf.keras.layers.Dense(layer1, activation=tf.nn.relu))
+    model.add(tf.keras.layers.Dense(layer2, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dropout(dropout))
     model.add(tf.keras.layers.Dense(11, activation=tf.nn.softmax))
 
-    # adam = tf.keras.optimizers.Adam(lr=0.0003)
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    adam = tf.keras.optimizers.Adam(lr=learning_rate)
+    model.compile(optimizer=adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     model.fit(x_train, d_train, epochs=epochs, verbose=False)
 
     loss, train_acc = model.evaluate(x=x_train, y=d_train, batch_size=1, verbose=False, sample_weight=None, steps=None)
@@ -37,9 +37,9 @@ def quadratic_weighted_kappa_score(d_array, y_array):
         d.append(int(d_array[i]))
         y.append(int(y_array[i]))
 
-    score = quadratic_weighted_kappa(d, y)
+    kappa = quadratic_weighted_kappa(d, y)
 
-    return score
+    return kappa
 
 
 def make_onehotvector(array, lowest_grade, highest_grade):

@@ -1,8 +1,5 @@
-from reader import *
 import numpy as np
-import nltk
 from nltk.tokenize import RegexpTokenizer
-import matplotlib.pyplot as plt
 import math
 import textstat
 
@@ -14,7 +11,8 @@ def extract_words(text):
 
     return words
 
-def extract_word_length(array, data):    # array is input values, data is the list created by reader.py.
+
+def word_length(array, data):    # array is input values, data is the list created by reader.py.
     try:
         values = []
         for row in data:
@@ -28,7 +26,7 @@ def extract_word_length(array, data):    # array is input values, data is the li
     return array
 
 
-def extract_score(array, column, data):
+def score(array, column, data):
     try:
         values = []
         for row in data:
@@ -42,7 +40,7 @@ def extract_score(array, column, data):
     return array
 
 
-def extract_average_word_length(array, data):
+def average_word_length(array, data):
     try:
         values = []
         for row in data:
@@ -58,8 +56,7 @@ def extract_average_word_length(array, data):
     return array
 
 
-
-def extract_stan_dev_word_length(array, data):
+def stan_dev_word_length(array, data):
     try:
         values = []
         for row in data:
@@ -80,7 +77,7 @@ def extract_stan_dev_word_length(array, data):
     return array
 
 
-def extract_dale_score(array, data):
+def dale_score(array, data):
     values = []
     for row in data:
         values.append(textstat.dale_chall_readability_score(row[2]))
@@ -90,7 +87,7 @@ def extract_dale_score(array, data):
     return array
 
 
-def extract_sentence_length(array, data):
+def sentence_length(array, data):
     values = []
     for row in data:
         values.append(textstat.sentence_count((row[2])))
@@ -98,24 +95,3 @@ def extract_sentence_length(array, data):
     array = np.c_[array, values]
 
     return array
-
-
-
-
-# number_of_essays = 20
-# data = read_dataset(number_of_essays)
-# array = np.zeros((number_of_essays, 0))
-# print(array)
-# array = extract_word_length(array, data)
-# print(array)
-# array = extract_average_word_length(array, data)
-# print(array)
-# array = extract_stan_dev_word_length(array, data)
-# array = extract_sentence_length(array, data)
-# print(array)
-# print(array)
-# array = extract_dale_score(array, data)
-# print(array)
-# array = extract_score(array, 6, data)
-# print(array)
-
