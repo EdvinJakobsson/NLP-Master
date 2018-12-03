@@ -14,6 +14,3 @@ def read_dataset(stop):
                 break
             counter = counter + 1
     return(data)
-
-
-read_dataset(2)
