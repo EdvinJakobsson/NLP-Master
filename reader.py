@@ -2,7 +2,8 @@ import csv
 
 def read_dataset(stop):
 
-    with open("Data/training_set_1.tsv") as tsvfile:
+    file = r"C:\Users\Edvin\Projects\NLP-Master\Data\training_set_1.tsv"
+    with open(file) as tsvfile:
         reader = csv.reader(tsvfile, delimiter='\t')
         counter = 0
         data = []
@@ -15,4 +16,4 @@ def read_dataset(stop):
     return(data)
 
 
-
+read_dataset(2)

@@ -1,0 +1,8 @@
+pip install numpy
+pip install -U nltk
+pip install textstat
+pip install -U scikit-learn
+pip install tensorflow
+
+# Install Microsoft Visual C++ 2015 for tensorflow to work:
+# https://www.microsoft.com/en-us/download/details.aspx?id=48145
