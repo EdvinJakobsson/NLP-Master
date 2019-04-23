@@ -102,7 +102,6 @@ def kfold_mlp(number_of_essays, kfold_splits, layer1, layer2, epochs, learning_r
      i = 0
 
      for train_index, test_index in skfold.split(x, d):
-          print("split ", i+1)
           x_train, d_train = x[train_index], d[train_index]
           x_test, d_test = x[test_index], d[test_index]
           train_acc, test_acc, kappa, model = extra_functions.mlp(x_train, d_train, x_test, d_test, layer1, layer2, epochs, learning_rate, dropout)
@@ -125,16 +124,16 @@ def main():
      layer2 = 20
      epochs = 200
      learning_rate = 0.001
-     dropout = 0.0
+     dropout = 0
 
 
-     # number_of_essays = 10
-     # kfold_splits = 2
-     # layer1 = 2
-     # layer2 = 2
-     # epochs = 2
-     # learning_rate = 0.001
-     # dropout = 0
+     number_of_essays = 10
+     kfold_splits = 2
+     layer1 = 2
+     layer2 = 2
+     epochs = 2
+     learning_rate = 0.001
+     dropout = 0
 
      print("Human Agreement Kappa: %2.3f" % human_raters_agreement(number_of_essays))
 
