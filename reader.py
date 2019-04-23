@@ -1,8 +1,8 @@
 import csv
 
 def read_dataset(stop):
-
-    file = r"C:\Users\Edvin\Projects\NLP-Master\Data\training_set_1.tsv"
+    essayfile = "/home/william/m18_edvin/Projects/Data/asap-aes/training_set_rel3.tsv"
+    #essayfile = r"C:\Users\Edvin\Projects\NLP-Master\Data\training_set_1.tsv"
     with open(file) as tsvfile:
         reader = csv.reader(tsvfile, delimiter='\t')
         counter = 0
