@@ -125,7 +125,7 @@ def main():
      layer2 = 20
      epochs = 200
      learning_rate = 0.001
-     dropout = 0.0
+     dropout = 0.99
 
 
      # number_of_essays = 10
