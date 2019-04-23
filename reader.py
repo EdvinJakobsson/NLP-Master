@@ -3,7 +3,7 @@ import csv
 def read_dataset(stop):
     essayfile = "/home/william/m18_edvin/Projects/Data/asap-aes/training_set_rel3.tsv"
     #essayfile = r"C:\Users\Edvin\Projects\NLP-Master\Data\training_set_1.tsv"
-    with open(file) as tsvfile:
+    with open(essayfile) as tsvfile:
         reader = csv.reader(tsvfile, delimiter='\t')
         counter = 0
         data = []
