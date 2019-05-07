@@ -89,9 +89,9 @@ def kfold_mlp(number_of_essays, kfold_splits, layer1, layer2, epochs, learning_r
      data = reader.read_dataset(number_of_essays)
 
      x = extract.word_length(x, data)
-     #x = extract.average_word_length(x, data)
-     #x = extract.stan_dev_word_length(x, data)
-     #x = extract.dale_score(x, data)
+     x = extract.average_word_length(x, data)
+     x = extract.stan_dev_word_length(x, data)
+     x = extract.dale_score(x, data)
      x = tf.keras.utils.normalize(x, axis=0)
 
      d = extract.score(d, 6, data)
@@ -120,20 +120,20 @@ def main():
 
      number_of_essays = 1246
      kfold_splits = 5
-     layer1 = 20
-     layer2 = 20
+     layer1 = 120
+     layer2 = 120
      epochs = 200
      learning_rate = 0.001
      dropout = 0
 
 
-     number_of_essays = 10
-     kfold_splits = 2
-     layer1 = 2
-     layer2 = 2
-     epochs = 2
-     learning_rate = 0.001
-     dropout = 0
+     #number_of_essays = 10
+     #kfold_splits = 2
+     #layer1 = 2
+     #layer2 = 2
+     #epochs = 2
+     #learning_rate = 0.001
+     #dropout = 0
 
      print("Human Agreement Kappa: %2.3f" % human_raters_agreement(number_of_essays))
 

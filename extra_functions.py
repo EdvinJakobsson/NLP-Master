@@ -4,17 +4,39 @@ from BenHamner.score import quadratic_weighted_kappa
 import numpy as np
 import tensorflow as tf
 from collections import Counter
+import matplotlib.pyplot as plt
+
+def plot_kappa(filename, epochs, train_kappa, val_kappa, title, x_axis):
+    plt.plot(epochs,train_kappa, "r--", label='Training Kappa')
+    plt.plot(epochs,val_kappa, label='Validation Kappa')
+    plt.ylabel('Kappa')
+    plt.xlabel(x_axis)
+    plt.ylim(-0.1,1)
+    plt.title(title)
+    plt.legend()
+    plt.savefig(filename)
+    plt.close()
 
 
+def plot_loss(filename, epochs, train_kappa, val_kappa, title, x_axis):
+    plt.plot(epochs,train_kappa, "r--", label='Training Loss')
+    plt.plot(epochs,val_kappa, label='Validation Loss')
+    plt.ylabel('Loss')
+    plt.xlabel(x_axis)
+    plt.ylim(0,3)
+    plt.title(title)
+    plt.legend()
+    plt.savefig(filename)
+    plt.close()
 
-def mlp(x_train, d_train, x_test, d_test, layer1=20, layer2=20, epochs=200, learning_rate=0.0003, dropout=0):
+def mlp(x_train, d_train, x_test, d_test, layer1, layer2, epochs, learning_rate, dropout, number_of_classes):
 
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Dense(layer1, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dropout(dropout))
     model.add(tf.keras.layers.Dense(layer2, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dropout(dropout))
-    model.add(tf.keras.layers.Dense(11, activation=tf.nn.softmax))
+    model.add(tf.keras.layers.Dense(number_of_classes, activation=tf.nn.softmax))
     adam = tf.keras.optimizers.Adam(lr=learning_rate)
     model.compile(optimizer=adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
@@ -27,6 +49,7 @@ def mlp(x_train, d_train, x_test, d_test, layer1=20, layer2=20, epochs=200, lear
     y_test = []
     for i in range(len(x_test)):
         y_test.append(np.argmax(p[i]))
+
 
     kappa_score = quadratic_weighted_kappa_score(d_test, y_test)
 
@@ -44,6 +67,16 @@ def quadratic_weighted_kappa_score(d_array, y_array):
     kappa = quadratic_weighted_kappa(d, y)
 
     return kappa
+
+def kappa(model, x, d):
+    p = model.predict([x])
+    y = []
+    for i in range(len(x)):
+        y.append(np.argmax(p[i]))
+
+    kappa_score = quadratic_weighted_kappa_score(d, y)
+
+    return kappa_score
 
 
 def make_onehotvector(array, lowest_grade, highest_grade):
