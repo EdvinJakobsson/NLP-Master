@@ -1,6 +1,6 @@
 import csv
 
-def read_dataset(stop):
+def read_dataset(stop, start = 0):
     #essayfile = r"/home/william/m18_edvin/Projects/Data/asap-aes/training_set_rel3.tsv"
     essayfile = r"C:\Users\Edvin\Projects\NLP-Master\Data\training_set_1.tsv"
     with open(essayfile, newline='', encoding='latin1') as tsvfile:
@@ -8,7 +8,7 @@ def read_dataset(stop):
         counter = 0
         data = []
         for row in reader:
-            if counter > 0:
+            if counter > start:
                 data.append(row)
             if counter == stop:
                 break

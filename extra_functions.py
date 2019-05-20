@@ -1,10 +1,16 @@
 from reader import *
-from extraction_functions import *
-from BenHamner.score import quadratic_weighted_kappa
+import extraction_functions as extract
 import numpy as np
 import tensorflow as tf
 from collections import Counter
 import matplotlib.pyplot as plt
+import reader_full
+from sklearn import svm, datasets
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.utils.multiclass import unique_labels
+from BenHamner.score import quadratic_weighted_kappa, mean_quadratic_weighted_kappa
+
 
 def plot_kappa(filename, epochs, train_kappa, val_kappa, title, x_axis):
     plt.plot(epochs,train_kappa, "r--", label='Training Kappa')
@@ -18,43 +24,16 @@ def plot_kappa(filename, epochs, train_kappa, val_kappa, title, x_axis):
     plt.close()
 
 
-def plot_loss(filename, epochs, train_kappa, val_kappa, title, x_axis):
-    plt.plot(epochs,train_kappa, "r--", label='Training Loss')
-    plt.plot(epochs,val_kappa, label='Validation Loss')
+def plot_loss(filename, epochs, train_loss, val_loss, title, x_axis, y_max = 2):
+    plt.plot(epochs,train_loss, "r--", label='Training Loss')
+    plt.plot(epochs,val_loss, label='Validation Loss')
     plt.ylabel('Loss')
     plt.xlabel(x_axis)
-    plt.ylim(0,3)
+    plt.ylim(0,y_max)
     plt.title(title)
     plt.legend()
     plt.savefig(filename)
     plt.close()
-
-def mlp(x_train, d_train, x_test, d_test, layer1, layer2, epochs, learning_rate, dropout, number_of_classes):
-
-    model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Dense(layer1, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dropout(dropout))
-    model.add(tf.keras.layers.Dense(layer2, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dropout(dropout))
-    model.add(tf.keras.layers.Dense(number_of_classes, activation=tf.nn.softmax))
-    adam = tf.keras.optimizers.Adam(lr=learning_rate)
-    model.compile(optimizer=adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
-
-    model.fit(x_train, d_train, epochs=epochs, verbose=False)
-    loss, train_acc = model.evaluate(x=x_train, y=d_train, batch_size=1, verbose=False, sample_weight=None, steps=None)
-    loss, test_acc = model.evaluate(x=x_test, y=d_test, batch_size=1, verbose=False, sample_weight=None, steps=None)
-
-    p = model.predict([x_test])
-    y_test = []
-    for i in range(len(x_test)):
-        y_test.append(np.argmax(p[i]))
-
-
-    kappa_score = quadratic_weighted_kappa_score(d_test, y_test)
-
-    return train_acc, test_acc, kappa_score, model
-
 
 
 def quadratic_weighted_kappa_score(d_array, y_array):
@@ -68,15 +47,53 @@ def quadratic_weighted_kappa_score(d_array, y_array):
 
     return kappa
 
-def kappa(model, x, d):
-    p = model.predict([x])
-    y = []
-    for i in range(len(x)):
-        y.append(np.argmax(p[i]))
 
-    kappa_score = quadratic_weighted_kappa_score(d, y)
 
-    return kappa_score
+
+def quadratic_weighted_kappa_for_MLP(x_val, d_val, essayset, model, output):
+    y_test, d_test = argmax(x_val, d_val, essayset, model, output)
+    kappa = quadratic_weighted_kappa(d_test, y_test)
+    return kappa
+
+
+
+
+def argmax(x_val, d_val, essayset, model, output):
+    asap_ranges = {
+    0: (0, 60),
+    1: (2, 12),
+    2: (1, 6),
+    3: (0, 3),
+    4: (0, 3),
+    5: (0, 4),
+    6: (0, 4),
+    7: (0, 30),
+    8: (0, 60)
+    }
+    max_score = asap_ranges[essayset][1] - asap_ranges[essayset][0]
+    p = model.predict([x_val])
+    predictions = []
+    targets = []
+    if output == 'softmax':
+        for i in range(len(x_val)):
+            predictions.append(np.argmax(p[i]))
+            targets.append(int(d_val[i]))
+    elif(output == 'sigmoid'):
+        for i in range(len(x_val)):
+            predictions.append(int(p[i]*max_score+0.5))
+            targets.append(int(d_val[i]*max_score))
+    elif(output == 'linear'):
+        for i in range(len(x_val)):
+            targets.append(int(d_val[i]))
+            prediction = int(p[i]+0.5)
+            if prediction > max_score:
+                prediction = max_score
+            if prediction < 0:
+                prediction = 0
+            predictions.append(prediction)
+    else:
+        print("argmax: something wrong with 'output' value")
+    return(predictions, targets)
 
 
 def make_onehotvector(array, lowest_grade, highest_grade):
@@ -109,38 +126,21 @@ def stats(d):
 
 
 
-def argmax(x_val, d_val, model):
-    p = model.predict([x_val])
-    y_test = []
-    d_test = []
-    for i in range(len(x_val)):
-        y_test.append(np.argmax(p[i]))
-        d_test.append(np.argmax(d_val[i]))
 
-    return(y_test, d_test)
-
-
-
-def save_confusion_matrix(savefile, model, x, d, lowest_score, highest_score, title=None):
-    predictions, targets = argmax(x, d, model)
-
+def save_confusion_matrix(savefile, model, x, d, essayset, output, title=None):
+    asap_ranges = {0: (0, 60), 1: (2, 12), 2: (1, 6), 3: (0, 3), 4: (0, 3), 5: (0, 4), 6: (0, 4), 7: (0, 30), 8: (0, 60) }
+    lowest_score = asap_ranges[essayset][0]
+    highest_score = asap_ranges[essayset][1]
+    predictions, targets = argmax(x, d, essayset, model, output)
     class_names = np.array(lowest_score)
     for i in range(lowest_score+1,highest_score+1):
         class_names = np.append(class_names, i)
 
-    plot = plot_confusion_matrix(targets, predictions, classes=class_names,
-                      title=title)
+    plot = plot_confusion_matrix(targets, predictions, classes=class_names, title=title)
     plt.savefig(savefile)
 
 
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-from sklearn import svm, datasets
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
-from sklearn.utils.multiclass import unique_labels
 
 
 def plot_confusion_matrix(y_true, y_pred, classes,
